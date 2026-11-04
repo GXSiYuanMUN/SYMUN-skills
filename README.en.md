@@ -82,7 +82,7 @@ SYMUN-skills/
 
 This is not a template. It decomposes the stable techniques behind the Siyuan MUN conference documents into something an agent can apply.
 
-**On source material**: every sample included here was written by Meng Xianyi himself — the invitations and secretary-general addresses of the 2nd, 3rd, 4th, and 6th conferences, plus the event proposals of the 3rd through 6th. The 5th conference's invitation and address were written by that conference's secretary-general, Luo Lixi — **not Meng Xianyi's work, and excluded here** (the 5th conference's *proposal* was his, so its theme development and committee rationale remain valid samples).
+**On source material**: every sample included here was written by the author of this skill — the invitations and secretary-general addresses of the 2nd, 3rd, 4th, and 6th conferences, plus the event proposals of the 3rd through 6th. The 5th conference's invitation and address were written by that conference's secretary-general — **not the author's work, and excluded here** (the 5th conference's *proposal* was the author's, so its theme development and committee rationale remain valid samples).
 
 **Why decompose style instead of shipping a template**
 

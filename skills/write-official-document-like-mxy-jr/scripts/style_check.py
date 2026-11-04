@@ -7,7 +7,7 @@
     python style_check.py <稿件路径> [--json]
 
 检测维度:
-    1. 感叹号密度      —— 蒙贤熠原稿通篇为 0，硬红线
+    1. 感叹号密度      —— 本技能作者原稿通篇为 0，硬红线
     2. 网络用语/口水词 —— 出现即扣分
     3. 四字格密度      —— 目标每 200 字 4-6 个
     4. 引证密度        —— 目标每千字 2-5 处
@@ -85,7 +85,7 @@ FOUR_CHAR_ANCHORS = [
 ]
 
 # 三分/多项并列：顿号或逗号连接的 3 项及以上平行短语
-# 蒙贤熠的排比常用逗号（"奔赴山海，追光逐焰，踏浪而行"）与顿号混用，两种都要识别
+# 本技能作者的排比常用逗号（"奔赴山海，追光逐焰，踏浪而行"）与顿号混用，两种都要识别
 SANLI_DUN = re.compile(r"[\u4e00-\u9fa5]{2,10}(?:、[\u4e00-\u9fa5]{2,10}){2,}")
 SANLI_DOU = re.compile(r"[\u4e00-\u9fa5]{2,8}(?:，[\u4e00-\u9fa5]{2,8}){2,}")
 
@@ -143,7 +143,7 @@ def detect_style(text, lines):
         "name": "感叹号密度",
         "value": f"{excl} 个（{r1:.1f} 个/千字）",
         "status": "pass" if excl == 0 else ("warn" if excl <= 3 else "fail"),
-        "advice": "蒙贤熠原稿通篇无感叹号。请改用动词、意象与排比承载情绪。" if excl else "符合",
+        "advice": "本技能作者原稿通篇无感叹号。请改用动词、意象与排比承载情绪。" if excl else "符合",
     })
 
     # 2. 网络用语
@@ -184,7 +184,7 @@ def detect_style(text, lines):
     cite_count = len(cite_positions)
     per_1000 = cite_count / max(n_chars / 1000, 1)
     # 短文本（<2000字）按绝对数判断，长文本按密度判断
-    # 上限放宽至 12/千字：蒙贤熠的真实方案正文引证密度本就很高（约 12.8/千字）
+    # 上限放宽至 12/千字：本技能作者的真实方案正文引证密度本就很高（约 12.8/千字）
     if n_chars < 2000:
         st = "pass" if 2 <= cite_count <= 14 else ("warn" if cite_count >= 1 else "fail")
     else:
@@ -226,7 +226,7 @@ def detect_style(text, lines):
         "name": "长句占比",
         "value": f"{ratio*100:.0f}%（{len(longs)}/{len(body)}，阈值 50 字）",
         "status": st,
-        "advice": "蒙贤熠以长句铺陈、短句转折。长句占比过低说明碎句过多。" if st != "pass" else "符合",
+        "advice": "本技能作者以长句铺陈、短句转折。长句占比过低说明碎句过多。" if st != "pass" else "符合",
     })
 
     # 9. 被动句
@@ -237,11 +237,11 @@ def detect_style(text, lines):
         "name": "被动句占比",
         "value": f"{p_ratio*100:.0f}%（{len(pas)} 处）",
         "status": st,
-        "advice": "目标 <=8%。蒙贤熠多用主动句与使令句。" if st != "pass" else "符合",
+        "advice": "目标 <=8%。本技能作者多用主动句与使令句。" if st != "pass" else "符合",
     })
 
     # 10. 段落长度（按分句计）
-    # 蒙贤熠有大量"独立成段的短句"（如"大家好。""2024年4月23日。"），属正常，
+    # 本技能作者有大量"独立成段的短句"（如"大家好。""2024年4月23日。"），属正常，
     # 因此只对过长段落（>9 句）告警，短段不扣分。
     paras = split_paragraphs(text)
     plens = [len(split_clauses(p)) for p in paras if len(p) > 30]
@@ -252,7 +252,7 @@ def detect_style(text, lines):
             "name": "段落长度",
             "value": f"平均 {sum(plens)/len(plens):.1f} 句/段（{len(plens)} 段，{len(bad)} 段超长）",
             "status": st,
-            "advice": "目标每段 3-8 句。超过 9 句应拆分。短句独立成段是蒙贤熠的常用手法，不扣分。" if st != "pass" else "符合",
+            "advice": "目标每段 3-8 句。超过 9 句应拆分。短句独立成段是本技能作者的常用手法，不扣分。" if st != "pass" else "符合",
         })
 
     # 11. 三分并列
@@ -263,7 +263,7 @@ def detect_style(text, lines):
         "name": "多项并列（三分句式）",
         "value": f"约 {len(sanli)} 处（{sl_per_300:.1f} 处/300字）",
         "status": st,
-        "advice": "蒙贤熠几乎每段都有三项以上的并列。补齐两项并列为三项。" if st != "pass" else "符合",
+        "advice": "本技能作者几乎每段都有三项以上的并列。补齐两项并列为三项。" if st != "pass" else "符合",
     })
 
     # 12. 禁用词
@@ -295,12 +295,14 @@ def detect_style(text, lines):
     })
 
     # 14. 落款
-    sig = "蒙贤熠" in text[-300:] or re.search(r"大会秘书长", text[-300:])
+    # 落款检查的是「职务 + 姓名 + 日期」的排版形式，不限定具体姓名
+    sig = bool(re.search(r"大会秘书长|学术总监|外联总监|会务总监", text[-300:])) \
+        or bool(re.search(r"\S{2,4}\s*[\r\n]+\s*\d{4}\s*年", text[-300:]))
     results.append({
         "name": "落款署名",
         "value": "检出" if sig else "未检出",
         "status": "pass" if sig else "warn",
-        "advice": "致辞类文本末尾应有『大会秘书长  蒙贤熠 + 日期』。" if not sig else "符合",
+        "advice": "致辞类文本末尾应有『大会秘书长  <姓名> + 日期』形式的落款。" if not sig else "符合",
     })
 
     return results
