@@ -2,7 +2,7 @@
 
 #### 广西·思源模拟联合国大会的公开技能集
 
-这里的每个 Skill 都是 Agent 能直接加载的结构化指令集，遵循 [Agent Skills 开放标准](https://openagentskills.dev/docs/specification)。Claude Code、Codex、CodeBuddy、Cursor 等支持该标准的工具都能装。
+这里的每个 Skill 都是 Agent 能直接加载的结构化指令集，遵循 [Agent Skills 开放标准](https://openagentskills.dev/docs/specification)。DeepSeek Haness、WorkBuddy、Claude Code、Codex、CodeBuddy、Cursor 等支持该标准的工具都能装。
 
 * * *
 
@@ -16,7 +16,7 @@
 
 ## 📦 安装方式
 
-在 Claude Code、Codex 等支持 Agent Skills 的工具里，直接说：
+在DeepSeek Haness、WorkBuddy、 Claude Code、Codex 等支持 Agent Skills 的工具里，直接说：
 
 ```
 帮我安装这个 skill：https://github.com/GXSiYuanMUN/SYMUN-skills/tree/main/skills/write-official-document-like-mxy-jr
