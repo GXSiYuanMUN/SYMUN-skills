@@ -1,0 +1,18 @@
+{
+  "name": "symun-skills",
+  "owner": {
+    "name": "GXSiYuanMUN"
+  },
+  "plugins": [
+    {
+      "name": "symun-skills",
+      "description": "思源模拟联合国大会的公开技能集：公文写作、会议筹备、议题研究等。",
+      "version": "1.0.0",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./write-official-document-like-mxy-jr"
+      ]
+    }
+  ]
+}

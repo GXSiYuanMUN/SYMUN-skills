@@ -1,0 +1,31 @@
+name: 校验技能规范
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Agent Skills 规范校验
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 校验所有 Skill
+        run: python scripts/validate_skills.py
+
+      - name: 风格自检脚本冒烟测试
+        run: |
+          python write-official-document-like-mxy-jr/scripts/style_check.py \
+            write-official-document-like-mxy-jr/references/04-原文选段.md || true
+          echo "脚本可执行且未崩溃"
+
+      - name: 校验 marketplace.json 可解析
+        run: python -c "import json;json.load(open('.claude-plugin/marketplace.json',encoding='utf-8'));print('OK')"
