@@ -1,0 +1,60 @@
+name: Bug 报告
+description: 报告技能使用中的错误或异常行为
+labels: bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请先确认已阅读技能的 `SKILL.md`，并跑过 `python scripts/validate_skills.py`。
+
+  - type: input
+    id: skill
+    attributes:
+      label: 涉及的 Skill
+      placeholder: write-official-document-like-mxy-jr
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: 问题类型
+      options:
+        - 技能未按预期触发
+        - 指令执行有误（产出不符合要求）
+        - 引用文件缺失或路径错误
+        - 附带脚本报错
+        - 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望行为
+      description: 你认为应该发生什么
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 实际行为
+      description: 实际发生了什么，附上完整的 Agent 输出
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: 复现步骤
+      description: 触发这个问题用的完整提示词
+      placeholder: 帮我写第七届思源模拟联合国大会的邀请函，主题是"XXX"
+    validations:
+      required: true
+
+  - type: input
+    id: agent
+    attributes:
+      label: 使用的 Agent 与版本
+      placeholder: CodeBuddy Desktop / Claude Code / Codex 等

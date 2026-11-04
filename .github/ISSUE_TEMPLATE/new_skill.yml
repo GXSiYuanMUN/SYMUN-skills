@@ -1,0 +1,69 @@
+name: 新增技能
+description: 提议一个新的 Skill
+labels: enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 提议前请确认
+
+        - 该技能**已经在真实场景中跑通**，不是"看起来不错"的想法
+        - 仓库内没有同类技能（先搜 Issues 与 Discussions）
+        - 目录名与 `SKILL.md` 的 `name` 字段完全一致，且仅用小写字母、数字、连字符
+
+  - type: input
+    id: name
+    attributes:
+      label: Skill 技术名
+      description: 目录名，必须与 SKILL.md 的 name 一致
+      placeholder: my-new-skill
+    validations:
+      required: true
+
+  - type: input
+    id: display
+    attributes:
+      label: 中文显示名
+      description: 可选，填了会写进 frontmatter 的 display_name
+      placeholder: 我的新技能
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 它解决什么问题
+      description: 一句话说清"没有它的时候你怎么做，有了它之后怎么做"
+    validations:
+      required: true
+
+  - type: textarea
+    id: usage
+    attributes:
+      label: 典型触发场景
+      description: 列出 3–5 个用户会怎么说的话
+      placeholder: |
+        帮我写一份 XX
+        检查这份 XX 像不像 XX 写的
+    validations:
+      required: true
+
+  - type: textarea
+    id: structure
+    attributes:
+      label: 计划的文件结构
+      description: SKILL.md 放什么，references/ 放什么，scripts/ 放什么
+      placeholder: |
+        SKILL.md
+        references/01-xxx.md
+        scripts/check.py
+    validations:
+      required: true
+
+  - type: textarea
+    id: provenance
+    attributes:
+      label: 素材来源与作者归属
+      description: |
+        若技能蒸馏自真实文档，请说明原作者与出处。
+        **不得默认归于仓库所有者**——发布前必须逐篇核实。
+    validations:
+      required: true

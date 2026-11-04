@@ -23,9 +23,19 @@ jobs:
 
       - name: 风格自检脚本冒烟测试
         run: |
-          python write-official-document-like-mxy-jr/scripts/style_check.py \
-            write-official-document-like-mxy-jr/references/04-原文选段.md || true
+          python skills/write-official-document-like-mxy-jr/scripts/style_check.py \
+            skills/write-official-document-like-mxy-jr/references/04-原文选段.md
           echo "脚本可执行且未崩溃"
 
-      - name: 校验 marketplace.json 可解析
-        run: python -c "import json;json.load(open('.claude-plugin/marketplace.json',encoding='utf-8'));print('OK')"
+      - name: 校验 marketplace.json 指向的目录均存在
+        run: |
+          python - <<'PY'
+          import json, os
+          m = json.load(open('.claude-plugin/marketplace.json', encoding='utf-8'))
+          for plugin in m['plugins']:
+              for s in plugin['skills']:
+                  p = s[2:] if s.startswith('./') else s
+                  assert os.path.isdir(p), f'marketplace.json 指向的目录不存在: {p}'
+                  assert os.path.isfile(os.path.join(p, 'SKILL.md')), f'缺少 SKILL.md: {p}'
+          print('OK')
+          PY

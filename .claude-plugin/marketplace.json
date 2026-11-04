@@ -11,7 +11,7 @@
       "source": "./",
       "strict": false,
       "skills": [
-        "./write-official-document-like-mxy-jr"
+        "./skills/write-official-document-like-mxy-jr"
       ]
     }
   ]

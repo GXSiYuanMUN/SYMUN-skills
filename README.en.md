@@ -19,7 +19,7 @@ Every Skill here is a structured instruction set that agents can load directly, 
 In any Agent Skills-compatible tool (Claude Code, Codex, etc.), just say:
 
 ```
-帮我安装这个 skill：https://github.com/GXSiYuanMUN/SYMUN-skills/tree/main/write-official-document-like-mxy-jr
+帮我安装这个 skill：https://github.com/GXSiYuanMUN/SYMUN-skills/tree/main/skills/write-official-document-like-mxy-jr
 ```
 
 The agent clones the directory itself — you don't need to worry about paths.
@@ -45,8 +45,30 @@ Manual install (Claude Code example):
 
 ```bash
 git clone https://github.com/GXSiYuanMUN/SYMUN-skills.git
-# copy the write-official-document-like-mxy-jr directory into .claude/skills/ or ~/.claude/skills/
+# copy the skills/write-official-document-like-mxy-jr directory into .claude/skills/ or ~/.claude/skills/
 ```
+
+* * *
+
+## 🗂 Repository structure
+
+```
+SYMUN-skills/
+├── skills/                          one directory per skill
+│   └── write-official-document-like-mxy-jr/
+│       ├── SKILL.md                 required: frontmatter + instructions
+│       ├── references/              docs loaded on demand
+│       ├── scripts/                 executable scripts
+│       └── LICENSE.txt
+├── scripts/validate_skills.py       repo-level: spec validation (called by CI)
+├── .claude-plugin/marketplace.json  plugin marketplace manifest
+├── .github/                         CI, issue and PR templates
+├── CONTRIBUTING.md                  contribution guide (incl. attribution rules)
+├── CHANGELOG.md                    changelog
+└── LICENSE                          MIT
+```
+
+**Adding a skill**: put it under `skills/`; the directory name must exactly match the `name` field in its `SKILL.md`. Run `python scripts/validate_skills.py` before committing.
 
 * * *
 
@@ -101,7 +123,7 @@ write-official-document-like-mxy-jr/
 Run it after drafting — 14 metrics, scored, with exactly what to fix:
 
 ```bash
-python write-official-document-like-mxy-jr/scripts/style_check.py draft.md
+python skills/write-official-document-like-mxy-jr/scripts/style_check.py draft.md
 ```
 
 Checks exclamation density, internet slang, four-character-idiom density, citation density, average sentence length, long-sentence ratio, passive-voice ratio, paragraph length, parallelism density, AI-tell banned words, signature closing, and byline.

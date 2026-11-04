@@ -151,14 +151,31 @@ def validate_skill(skill_dir: Path):
             fail(name, f"SKILL.md 引用了不存在的文件：{rel}")
 
 
-def main():
-    skill_dirs = sorted(
-        p for p in SKILLS_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith(".") and p.name not in ("scripts", "tests", "assets")
+def find_skill_dirs():
+    """
+    扫描仓库内的 Skill 目录。
+
+    约定：Skill 一律放在 skills/ 子目录下（每个 Skill 一个目录）。
+    若 skills/ 不存在，则退化为扫描仓库根目录（兼容单 Skill 仓库）。
+    """
+    skills_root = ROOT / "skills"
+    if skills_root.is_dir():
+        return sorted(
+            p for p in skills_root.iterdir()
+            if p.is_dir() and not p.name.startswith(".") and p.name != "scripts"
+        )
+    return sorted(
+        p for p in ROOT.iterdir()
+        if p.is_dir() and not p.name.startswith(".")
+        and p.name not in ("scripts", "tests", "assets", ".github", ".claude-plugin")
     )
 
+
+def main():
+    skill_dirs = find_skill_dirs()
+
     if not skill_dirs:
-        print("未发现任何 Skill 目录", file=sys.stderr)
+        print("未发现任何 Skill 目录（应位于 skills/ 下）", file=sys.stderr)
         return 1
 
     print(f"发现 {len(skill_dirs)} 个 Skill 目录，开始校验…\n")

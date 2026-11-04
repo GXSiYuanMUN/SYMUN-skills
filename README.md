@@ -19,7 +19,7 @@
 在 Claude Code、Codex 等支持 Agent Skills 的工具里，直接说：
 
 ```
-帮我安装这个 skill：https://github.com/GXSiYuanMUN/SYMUN-skills/tree/main/write-official-document-like-mxy-jr
+帮我安装这个 skill：https://github.com/GXSiYuanMUN/SYMUN-skills/tree/main/skills/write-official-document-like-mxy-jr
 ```
 
 Agent 会自己 clone 到对应目录，不用你操心路径。
@@ -45,8 +45,31 @@ npx skills add GXSiYuanMUN/SYMUN-skills --skill write-official-document-like-mxy
 
 ```bash
 git clone https://github.com/GXSiYuanMUN/SYMUN-skills.git
-# 把 write-official-document-like-mxy-jr 目录复制到项目的 .claude/skills/ 或全局的 ~/.claude/skills/
+# 把 skills/write-official-document-like-mxy-jr 目录复制到项目的 .claude/skills/ 或全局的 ~/.claude/skills/
 ```
+
+* * *
+
+## 🗂 仓库结构
+
+```
+SYMUN-skills/
+├── skills/                          每个 Skill 一个独立目录
+│   └── write-official-document-like-mxy-jr/
+│       ├── SKILL.md                 必需：frontmatter + 指令正文
+│       ├── references/              按需加载的参考文档
+│       ├── scripts/                 可执行脚本
+│       └── LICENSE.txt
+├── scripts/validate_skills.py       仓库级：规范校验（CI 自动调用）
+├── .claude-plugin/marketplace.json  插件市场清单
+├── .github/                         CI、Issue 与 PR 模板
+├── CONTRIBUTING.md                  贡献指南（含素材归属要求）
+├── CHANGELOG.md                    更新日志
+└── LICENSE                          MIT
+```
+
+**新增 Skill**：放在 `skills/` 下，目录名必须与 `SKILL.md` 的 `name` 完全一致。
+提交前跑一遍 `python scripts/validate_skills.py`。
 
 * * *
 
@@ -101,7 +124,7 @@ symun-gov-doc-writer/
 写完稿子跑一遍，14 项指标逐项打分，告诉你哪里不像：
 
 ```bash
-python write-official-document-like-mxy-jr/scripts/style_check.py 稿件.md
+python skills/write-official-document-like-mxy-jr/scripts/style_check.py 稿件.md
 ```
 
 检测感叹号密度、网络用语、四字格密度、引证密度、平均句长、长句占比、被动句占比、段落长度、三分句式密度、AI 味禁用词、标志性收束、落款署名。
@@ -114,7 +137,7 @@ python write-official-document-like-mxy-jr/scripts/style_check.py 稿件.md
 | 第六届活动方案「大会目的及意义」正文 | 94 | 0 |
 | 一篇 AI 味的反面样本 | 62.5 | 1 |
 
-→ [脚本完整说明](write-official-document-like-mxy-jr/scripts/style_check.py)
+→ [脚本完整说明](skills/write-official-document-like-mxy-jr/scripts/style_check.py)
 
 * * *
 
