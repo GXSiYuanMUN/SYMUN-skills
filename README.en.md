@@ -11,6 +11,9 @@ Every Skill here is a structured instruction set that agents can load directly, 
 | Name | One-liner | Docs |
 |---|---|---|
 | **write-official-document-like-mxy-jr** (Chinese display name: 像MXY.jr那样写公文.1.0) | Distills Meng Xianyi's (MXY.jr) official-document writing ability and style across six consecutive Siyuan MUN conferences — for invitations, secretary-general addresses, event proposals, and background papers | [Details](#-write-official-document-like-mxy-jr) |
+| **workbuddy-c-drive-friendly** (Chinese display name: WorkBuddy C 盘友好版.1.0) | Read-only disk audit, then robocopy plus an NTFS directory junction (`mklink /J`) to move WorkBuddy's hard-coded runtime data off the system drive — original path unchanged, one-command rollback | [Details](#-workbuddy-c-drive-friendlyworkbuddy-c-盘友好版10) |
+
+> This repository is primarily about conference skills, but also carries **agent productivity tools** that have been proven in real events and real office work.
 
 * * *
 
@@ -55,10 +58,15 @@ git clone https://github.com/GXSiYuanMUN/SYMUN-skills.git
 ```
 SYMUN-skills/
 ├── skills/                          one directory per skill
-│   └── write-official-document-like-mxy-jr/
-│       ├── SKILL.md                 required: frontmatter + instructions
-│       ├── references/              docs loaded on demand
-│       ├── scripts/                 executable scripts
+│   ├── write-official-document-like-mxy-jr/
+│   │   ├── SKILL.md                 required: frontmatter + instructions
+│   │   ├── references/              docs loaded on demand
+│   │   ├── scripts/                 executable scripts
+│   │   └── LICENSE.txt
+│   └── workbuddy-c-drive-friendly/
+│       ├── SKILL.md
+│       ├── references/              decision guide, layout, pitfalls, case study
+│       ├── scripts/                 diagnose / make_bat / list_automations
 │       └── LICENSE.txt
 ├── scripts/validate_skills.py       repo-level: spec validation (called by CI)
 ├── .claude-plugin/marketplace.json  plugin marketplace manifest
@@ -135,6 +143,61 @@ The thresholds are not guesses — they were reverse-calibrated against Meng Xia
 | 2nd-conference secretary-general address (original) | 100 | 0 |
 | 6th-conference proposal, "大会目的及意义" section | 94 | 0 |
 | An AI-flavored negative sample | 62.5 | 1 |
+
+* * *
+
+### 🛠️ workbuddy-c-drive-friendly (WorkBuddy C 盘友好版.1.0)
+
+> *"Don't change the path. Change where it lands."*
+
+**It solves one concrete problem: WorkBuddy / CodeBuddy slowly eats the C drive, and there is no setting anywhere to change its data directory.**
+
+WorkBuddy hard-codes everything into `C:\Users\<you>\.workbuddy` — skills, memory, automation database, Python/Node runtimes, browser profiles. Long-term use pushes it into several GB; add `%LOCALAPPDATA%\ms-playwright` (browser kernels, ~1.4 GB) and the system drive is in trouble.
+
+The approach: **move the data, leave a "portal" behind.**
+
+```
+Before:  C:\Users\<you>\.workbuddy\        real data (occupying C:)
+After:   C:\Users\<you>\.workbuddy\  ══►  E:\FutureWay\_runtime\workbuddy\   ← real data
+         (a directory junction — takes almost no space itself)
+```
+
+The program keeps reading and writing the C: path; Windows transparently resolves it to the new drive. **Path unchanged → no config edits, no broken history index, one command to roll back.**
+
+**Three steps, fully reversible**
+
+1. **Audit** (read-only, instant): `python scripts/diagnose.py` — free space per drive, whether the runtime is already a junction, which directories are worth moving, which workspaces sit on the system drive
+2. **Generate the cutover scripts**: `python scripts/make_bat.py --pair "src::dst" ...` — four scripts generated from your real paths, never hand-written
+3. **A human runs the cutover**: fully quit the app, then double-click `2_cutover.bat`; every directory must print `PASS`. `3_cleanup.bat` runs last and demands a typed `YES`
+
+| Script | Purpose | Deletes anything? |
+|---|---|---|
+| `1_copy.bat` | First full copy + diff report | No |
+| `2_cutover.bat` | Incremental sync → rename original → create junction → verify each; auto-rollback on failure | No |
+| `3_cleanup.bat` | Delete the old copy, after verifying the junction is in place | **Yes** (the only one) |
+| `9_rollback.bat` | Remove junction → restore original name; new-drive data untouched | No |
+
+**Why the cutover is not delegated to the agent**
+
+The agent itself usually runs from inside that data directory. Rewriting your own data directory while the process is live leaves a mixed state where old handles point at the old path and new processes point at the new one. So a human performs this step; the scripts put the guard rails up front.
+
+**Three hard constraints (learned the hard way)**
+
+- The target drive must be a **fixed disk** — never a USB stick, external drive, or network share. Losing the drive loses everything
+- Detect junctions with `os.readlink()`, **not `os.path.islink()`** — the latter returns `False` for Windows junctions and will make you conclude the junction was lost
+- **Relocation stops the bleeding, it does not cure it**: after moving 6.2 GB off C:, free space only recovered from 1.2 GB to 2.0 GB — Windows updates and other software ate the difference. It fixes one app's long-term growth, not a full-disk cleanup
+
+**A related confusion it also settles**
+
+"All my automations disappeared after the upgrade" is almost never true. Automation definitions live in the `automations` table of `workbuddy.db` and are bound to a working directory via `cwds[0]`; **if the workspace you have open is not in that task's `cwds`, the list is simply empty**. `scripts/list_automations.py` groups every task by workspace and checks whether its run archive is present.
+
+**Measured on real data**
+
+- 19,138 directories / 84,711 files / 4.645 GB — first copy took **1 min 24 s**
+- Survived a version upgrade afterwards; the junction was untouched and the new version's own SQLite migrations landed on the new drive
+- The four scripts were run end to end in a sandbox: copy → cutover → rollback → cleanup, including the safety valve that refuses to clean up when the source is not a junction
+
+→ [SKILL.md](skills/workbuddy-c-drive-friendly/SKILL.md) · [Case study with post-migration review](skills/workbuddy-c-drive-friendly/references/case-study.md) · [12 real pitfalls](skills/workbuddy-c-drive-friendly/references/pitfalls.md)
 
 * * *
 
